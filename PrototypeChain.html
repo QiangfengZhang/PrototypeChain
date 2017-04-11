@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>PrototypeChain</title>
+	<script>
+
+		// 定义一个Person对象
+		function Person(first, last, age, gender, interests) {
+			this.name = {
+				first,
+				last
+			};
+			this.age = age;
+			this.gender = gender;
+			this.interests =interests;
+		}
+
+		// Person对象的所有 方法 都定义在构造器的prototype上
+		Person.prototype.greeting = function () {
+			alert('Hi! I\'m ' + this.name.first + '.' );
+		}
+
+		// 定义Teacher()构造函数，
+		function Teacher(first, last, age, gender, interests, subject) {
+			Person.call(this, first, last, age, gender, interests); // 通过function.call来调用父类的构造函数
+			this.subject = subject;
+
+		}
+		
+		Teacher.prototype = Object.create(Person.prototype);// Teacher.prototype现在会继承Person.prototype的所有属性和方法
+		
+		console.log(Teacher.prototype.constructor);// Teacher构造器指向 Person()
+
+		Teacher.prototype.constructor = Teacher;// 将Teacher构造器指向改成指向Teacher()
+
+		console.log(Teacher.prototype.constructor);// Teacher构造器指向 Teacher()
+
+		console.log(Person.prototype.constructor);// Person === Person.prototype.constructor
+
+		console.log(Person);// Person === Person.prototype.constructor
+
+
+		console.log(Teacher.prototype);
+		var person1 = new Person('强锋', '张', 23, '男', '篮球');
+		console.log(person1);
+		// console.log(person1.greeting());
+		var teacher1 = new Teacher(this, '强锋', '张', 23, '男', '篮球', '英语');
+		console.log(teacher1);
+
+		/*每一个函数对象(function)都有一个prototype属性，并且只有函数对象有prototype属性，因为prototype本身就是定义在function对象下的属性。当我们输入类似 var person1 = new Preson(...)来构造对象时，JavaScript实际上参考的是Person.prototype指向的对象来生成person1。另一方面，Person()函数是Person.prototype的构造函数，也就是说Person === Person.prototype.constructor
+		在定义新的构造函数Teacher时，我们通过function.call来调用父类的构造函数，但是这样无法自动指定Teacher.prototype的值，这样Teacher.prototype就只能包含在构造函数里构造的属性，而没有方法。因此我们利用Create方法将Person的原型对象复制给Teacher的原型对象，并改变其构造器指向，使之与Teacher关联。
+		任何你想要被继承的方法都应该定义在构造函数的prototype对象里，并且永远使用父类的prototype来创造子类的prototype，这样才不会打乱类的继承结构。*/
+
+
+		function Array1(name, age) {
+			this.name = name;
+			this.age = age;
+			this.b = 4;
+			this.c = 3;
+		}
+ 		Array2.prototype = Object.create(Array1.prototype);
+
+ 		function Array2(name, age, gender, interests) {
+ 			Array1.call(this, name, age);
+ 			this.gender = gender;
+ 			this.interests = interests;
+ 			this.a = 1;
+ 			this.b = 2;
+ 		}
+ 		Array2.prototype.constructor = Array2;
+ 		
+
+ 		var o = new Array2('张强锋', null, '男', '篮球');
+ 		var b = new Array1('何聪','24');
+
+ 		console.log(Array2.prototype.constructor);
+ 		console.log(Array2);
+
+ 		console.log(o.a);
+ 		console.log(o.b);
+ 		console.log(o.c);
+
+ 		// 当继承的函数被调用时，this 指向的是当前继承的对象，而不是继承的函数所在的原型对象。
+ 		var o = {
+ 			a: 2,
+ 			m: function() {
+ 				return this.a + 1;
+ 			}
+ 		};
+
+ 		console.log(o.m()); // 当调用函数o.m时，'this'指向了o.
+
+ 		var p = Object.create(o);  // p是一个对象，p.prototype是o.
+
+ 		p.a = 12; // 创建 p 的自身属性a.
+
+ 		console.log(p.m()); // 调用 p.m 时，'this'指向p. 又因为 p 继承 o 的m函数，此时的'this.a'即p.a，即 p 的自身属性 'a'
+
+
+
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
